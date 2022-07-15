@@ -51,6 +51,12 @@
 
     <script>
       function retrieveData() {
+        //Retrieve static
+
+        d3.csv("data/2017.csv").get(function (data) {
+          console.log(data);
+        });
+
         var queryVal = document.getElementById("query").value;
 
         //for further filter
@@ -357,109 +363,6 @@
                     );
                   }
                 }
-                // if (boolFlat1 == false || boolFlat2 == false) {
-                //   if (boolFlat1 == false) {
-                //     boolFlat1 = true;
-                //     idFlat1 = d._id;
-                //     d3.select("#flatInfo1")
-                //       .style("opacity", 1)
-                //       .style("text-align", "left")
-                //       .html(
-                //         "<div>Flat Info" +
-                //           "<br />Town: " +
-                //           d.town +
-                //           "<br />Block: " +
-                //           d.block +
-                //           "<br />Street Name: " +
-                //           d.street_name +
-                //           "<br />Flat Model: " +
-                //           d.flat_model +
-                //           "<br />Flat Type: " +
-                //           d.flat_type +
-                //           "<br />Floor Area sqm: " +
-                //           d.floor_area_sqm +
-                //           "<br />Lease Commence Date: " +
-                //           d.lease_commence_date +
-                //           "<br />Remaining Lease: " +
-                //           d.remaining_lease +
-                //           "<br />Month: " +
-                //           d.month +
-                //           "<br />Rank: " +
-                //           d.rank +
-                //           "<br />Resale Price: " +
-                //           d.resale_price +
-                //           "<br />Storey Range: " +
-                //           d.storey_range +
-                //           "<br />ID: " +
-                //           d._id +
-                //           "</div>"
-                //       );
-                //     console.log(
-                //       "changed boolflat1 boolean to true with id " + idFlat1
-                //     );
-                //   } else if (boolFlat2 == false) {
-                //     boolFlat2 = true;
-                //     idFlat2 = d._id;
-                //     d3.select("#flatInfo2")
-                //       .style("opacity", 1)
-                //       .style("text-align", "left")
-                //       .html(
-                //         "<div>Flat Info" +
-                //           "<br />Town: " +
-                //           d.town +
-                //           "<br />Block: " +
-                //           d.block +
-                //           "<br />Street Name: " +
-                //           d.street_name +
-                //           "<br />Flat Model: " +
-                //           d.flat_model +
-                //           "<br />Flat Type: " +
-                //           d.flat_type +
-                //           "<br />Floor Area sqm: " +
-                //           d.floor_area_sqm +
-                //           "<br />Lease Commence Date: " +
-                //           d.lease_commence_date +
-                //           "<br />Remaining Lease: " +
-                //           d.remaining_lease +
-                //           "<br />Month: " +
-                //           d.month +
-                //           "<br />Rank: " +
-                //           d.rank +
-                //           "<br />Resale Price: " +
-                //           d.resale_price +
-                //           "<br />Storey Range: " +
-                //           d.storey_range +
-                //           "<br />ID: " +
-                //           d._id +
-                //           "</div>"
-                //       );
-                //     console.log(
-                //       "changed boolflat2 boolean to true with id " + idFlat2
-                //     );
-                //   }
-                // } else if (boolFlat1 == true || boolFlat2 == true) {
-                //   if (idFlat1 == d._id && boolFlat1 == true) {
-                //     boolFlat1 = false;
-                //     idFlat1 = 0;
-                //     d3.select("#flatInfo1")
-                //       .style("opacity", 1)
-                //       .style("text-align", "left")
-                //       .html("");
-                //     console.log(
-                //       "changed boolflat1 boolean to false with id " + idFlat1
-                //     );
-                //   } else if (idFlat2 == d._id && boolFlat2 == true) {
-                //     boolFlat2 = false;
-                //     idFlat2 = 0;
-                //     d3.select("#flatInfo2")
-                //       .style("opacity", 1)
-                //       .style("text-align", "left")
-                //       .html("");
-                //     console.log(
-                //       "changed boolflat2 boolean to false with id " + idFlat2
-                //     );
-                //   }
-                // }
 
                 //if selection matches either
                 if (idFlat1 == d._id) {
