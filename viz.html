@@ -9,6 +9,7 @@
     <!-- <script src="https://d3js.org/d3.v6.js"></script> -->
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script>
+        <link rel="stylesheet" href="css/style.css">
 
     <style>
       .parent {
@@ -28,7 +29,7 @@
 
   <body>
     <div style="text-align: center">
-      <h2 style="text-align: center">HDB Task 1 Scatterplot Chart</h2>
+      <h2 style="text-align: center">Scatterplot Chart on Resale HDB Transactions</h2>
       <label for="lQuery">Query:</label>
       <input
         type="text"
@@ -218,8 +219,10 @@ function filterHigh() {
       //=================Initialise=============================================
       // set the dimensions and margins of the graph
       var margin = { top: 10, right: 30, bottom: 30, left: 60 },
-        width = 1000 - margin.left - margin.right,
-        height = 800 - margin.top - margin.bottom;
+        // width = 1000 - margin.left - margin.right,
+        // height = 800 - margin.top - margin.bottom;
+        width = 700 - margin.left - margin.right,
+        height = 550 - margin.top - margin.bottom;
 
         d3.select("svg").remove(); 
         // append the svg object to the body of the page
@@ -250,11 +253,13 @@ function filterHigh() {
               var x = d3
                 .scaleTime()
                 .domain([minDate, maxDate])
+                // .range([0, width]);
+                // .nice(d3.time.month)
                 .range([0, width]);
               svg
                 .append("g")
                 .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x));
+                .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m")));
 
               // Add Y axis
               var y = d3
@@ -307,7 +312,7 @@ function filterHigh() {
                 .domain(result)
                 // .domain([newData.flat_type])
                 // .range(d3.schemeGreys[3]);
-                .range(d3.schemeGreys[colourRange]);
+                .range(d3.schemeBlues[colourRange]);
 
               //Legend
               var legendX = 800;
@@ -379,8 +384,11 @@ function filterHigh() {
                       d3.select("#flatInfo1")
                         .style("opacity", 1)
                         .style("text-align", "left")
+                        .style("padding", "0.5em")
+                        // .style("border-color", "#404044")
+                        .style("border-style", "groove")
                         .html(
-                          "<div>Flat Info" +
+                          "<div><u>Flat Info 1</u>" +
                             "<br />Town: " +
                             d.town +
                             "<br />Block: " +
@@ -399,14 +407,14 @@ function filterHigh() {
                             d.remaining_lease +
                             "<br />Month: " +
                             d.month +
-                            "<br />Rank: " +
-                            d.rank +
+                            // "<br />Rank: " +
+                            // d.rank +
                             "<br />Resale Price: " +
                             d.resale_price +
                             "<br />Storey Range: " +
                             d.storey_range +
-                            "<br />ID: " +
-                            d._id +
+                            // "<br />ID: " +
+                            // d._id +
                             "</div>"
                         );
                       console.log(
@@ -422,8 +430,11 @@ function filterHigh() {
                       d3.select("#flatInfo2")
                         .style("opacity", 1)
                         .style("text-align", "left")
+                        .style("padding", "0.5em")
+                        // .style("border-color", "#404044")
+                        .style("border-style", "groove")
                         .html(
-                          "<div>Flat Info" +
+                          "<div><u>Flat Info 2</u>" +
                             "<br />Town: " +
                             d.town +
                             "<br />Block: " +
@@ -442,14 +453,14 @@ function filterHigh() {
                             d.remaining_lease +
                             "<br />Month: " +
                             d.month +
-                            "<br />Rank: " +
-                            d.rank +
+                            // "<br />Rank: " +
+                            // d.rank +
                             "<br />Resale Price: " +
                             d.resale_price +
                             "<br />Storey Range: " +
                             d.storey_range +
-                            "<br />ID: " +
-                            d._id +
+                            // "<br />ID: " +
+                            // d._id +
                             "</div>"
                         );
                       console.log(
