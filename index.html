@@ -1,1145 +1,402 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>CSC3007 - Milestone 2</title>
-    <meta charset="utf-8" />
-    <!-- Load d3.js -->
-    <script src="https://unpkg.com/d3-regression@1.3.10/dist/d3-regression.min.js"></script>
-    <script src="https://d3js.org/d3.v4.js"></script>
-    <!-- <script src="https://d3js.org/d3.v6.js"></script> -->
-    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script>
 
-    <style>
-      .parent {
-        /* border: 1px solid black; */
-        /* margin: 1rem; */
-        /* padding: 2rem 2rem; */
-        text-align: center;
-      }
-      .child {
-        display: inline-block;
-        /* border: 1px solid red; */
-        /* padding: 1rem 1rem; */
-        vertical-align: middle;
-      }
-    </style>
-  </head>
+<head>
+    <title>SGP.fyi</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <body>
-    <div style="text-align: center">
-      <h2 style="text-align: center">HDB Task 1 Scatterplot Chart</h2>
-      <label for="lQuery">Query:</label>
-      <input
-        type="text"
-        id="query"
-        name="query"
-        value="310a punggol walk"
-      /><br />
-      <label for="lFilter">Storey Range: </label>
-      <input class="filter_button" id="low_button" type="checkbox" onclick="filterLow();">Low (01 to 03) </input>
-      <input class="filter_button" id="mid_button" type="checkbox" onclick="filterMid();">Mid (04 to 09)</input>
-      <input class="filter_button" id="high_button" type="checkbox" onclick="filterHigh();">High (10 and above)</input>
-      <button onclick="retrieveDataFilterAll()">Retrieve</button><br />
-      <!-- Create a div where the graph will take place -->
-      <div class="parent">
-        <div id="my_dataviz" class="child"></div>
-        <div id="flatInfo1" class="child"></div>
-        <div id="flatInfo2" class="child"></div>
-      </div>
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,200,300,400,700,800" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="css/icomoon.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+
+    <script src="js/ScrollMagic.js"></script>
+
+</head>
+
+<body>
+
+    <div class="hero-wrap js-fullheight">
+        <div class="overlay"></div>
+        <div id="particles-js"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-center justify-content-center"
+                data-scrollax-parent="true">
+                <div class="col-md-6 sgp-animate text-center" data-scrollax=" properties: { translateY: '70%' }">
+
+                    <!-- Data visualization regarding SGP.fyi-->
+                    <h1 class="mb-3 bread" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">SGP.fyi</h1>
+                    <small></br>Scroll Down</small>
+                    <div class="mouse"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-      var gData;
-      var newFData = [];
-
-      function filterLow() {
-        //Check if ticked or unticked
-        var flCheck = document.getElementById("low_button");
-        if (flCheck.checked) {
-
-              for (const entry in gData) {
-                // console.log(data[entry].month);
-                var one = gData[entry];
-                if (
-                  one.storey_range == "01 TO 03"
-                ) {
-                  newFData.push(one);
-                }
-              } //loop through data
-        } else {
-          //remove
-          var remainingArr = newFData.filter(data => data.storey_range != '01 TO 03');
-              newFData = remainingArr;
-        }
-              console.log(newFData);
-
-                            //replot
-              d3.select("svg").remove(); 
-                            plot(newFData);
-      } //filterLow
-      
-      function filterMid() {
-        //Check if ticked or unticked
-        var fmCheck = document.getElementById("mid_button");
-        if (fmCheck.checked) {
-
-              for (const entry in gData) {
-                // console.log(data[entry].month);
-                var one = gData[entry];
-                if (
-                 one.storey_range == "04 TO 06" || one.storey_range == "07 TO 09"
-                ) {
-                  newFData.push(one);
-                }
-              } //loop through data
-        } else {
-          //remove
-          var remainingArr = newFData.filter(data => data.storey_range != '04 TO 06' && data.storey_range != '07 TO 09' );
-              newFData = remainingArr;
-        }
-              console.log(newFData);
-
-                            //replot
-              d3.select("svg").remove(); 
-                            plot(newFData);
-      } //filterMid
-
-      // function filterMid() {
-      //   var newFData = [];
-
-      //         //look for and add accordingly
-      //         for (const entry in gData) {
-      //           // console.log(data[entry].month);
-      //           var one = gData[entry];
-      //           if (
-      //             one.storey_range == "04 TO 06" && one.storey_range == "07 TO 09"
-      //           ) {
-      //             // console.log("found");
-      //             // console.log(one);
-      //             //format month-year
-      //             // console.log("original");
-      //             // console.log(data[key].month);
-      //             // console.log("Check");
-      //             // console.log(parseDate(data[key].month));
-
-      //             // one.fMonth = parseDate(one.month);
-      //             // one._id = entry;
-
-      //             // console.log("Final");
-      //             // console.log(entry.fMonth);
-
-      //             // console.log(entry);
-      //             // console.log(entry._id);
-      //             newFData.push(one);
-      //           }
-      //         } //loop through data
-      //         console.log(newFData);
-
-      //         //replot
-      //         d3.select("svg").remove(); 
-      //                       plot(newFData);
-      // } //filterMid
-function filterHigh() {
-        //Check if ticked or unticked
-        var fhCheck = document.getElementById("high_button");
-        if (fhCheck.checked) {
-
-              for (const entry in gData) {
-                // console.log(data[entry].month);
-                var one = gData[entry];
-                if (
-                 one.storey_range != "01 TO 03" && one.storey_range != "04 TO 06" && one.storey_range != "07 TO 09"
-                ) {
-                  newFData.push(one);
-                }
-              } //loop through data
-        } else {
-          //remove
-          console.log("Uncheck");
-          var remainingArr = newFData.filter(data => data.storey_range != "01 TO 03" && data.storey_range != "04 TO 06" && data.storey_range != "07 TO 09" );
-          console.log(remainingArr);
-          
-          for (var findOne in remainingArr) {
-          // const index = newFData.indexOf(remainingArr[findOne]._id);
-          newFData = newFData.filter( ( el ) => !remainingArr.includes( el ) );
-//           console.log(index);
-//         if (index > -1) { // only splice array when item is found
-//           newFData.splice(index, 1); // 2nd parameter means remove one item only
-// console.log("found");
-//         }    
-
-          } //for
-        } //else
-              console.log(newFData);
-
-                            //replot
-              d3.select("svg").remove(); 
-                            plot(newFData);
-      } //filterHigh
-      // function filterHigh() {
-      //   var newFData = [];
-
-      //         //look for and add accordingly
-      //         for (const entry in gData) {
-      //           // console.log(data[entry].month);
-      //           var one = gData[entry];
-      //           if (
-      //             one.storey_range != "01 TO 03" && one.storey_range != "04 TO 06" && one.storey_range != "07 TO 09"
-      //           ) {
-      //             // console.log("found");
-      //             // console.log(one);
-      //             //format month-year
-      //             // console.log("original");
-      //             // console.log(data[key].month);
-      //             // console.log("Check");
-      //             // console.log(parseDate(data[key].month));
-
-      //             // one.fMonth = parseDate(one.month);
-      //             // one._id = entry;
-
-      //             // console.log("Final");
-      //             // console.log(entry.fMonth);
-
-      //             // console.log(entry);
-      //             // console.log(entry._id);
-      //             newFData.push(one);
-      //           }
-      //         } //loop through data
-      //         console.log(newFData);
-
-      //         //replot
-      //         d3.select("svg").remove(); 
-      //         plot(newFData);
-      // } //filterHigh
-
-      function plot(newData) {
-
-      //=================Initialise=============================================
-      // set the dimensions and margins of the graph
-      var margin = { top: 10, right: 30, bottom: 30, left: 60 },
-        width = 1000 - margin.left - margin.right,
-        height = 800 - margin.top - margin.bottom;
-
-        d3.select("svg").remove(); 
-        // append the svg object to the body of the page
-      var svg = d3
-        .select("#my_dataviz")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-       //get minmax time period
-              var minDate = d3.min(newData.map((d) => d.fMonth));
-              var maxDate = d3.max(newData.map((d) => d.fMonth));
-              console.log("MinDate: " + minDate + "Max Date: " + maxDate);
-
-              //get minmax val
-              var minAmt = d3.min(newData.map((d) => d.resale_price));
-              var maxAmt = d3.max(newData.map((d) => d.resale_price));
-
-              // d3.json(
-              // "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv",
-              // function (data) {
-//refresh graph
-                            svg.exit().remove();
-              // Add X axis
-              // var x = d3.scaleLinear().domain([4, 8]).range([0, width]);
-              var x = d3
-                .scaleTime()
-                .domain([minDate, maxDate])
-                .range([0, width]);
-              svg
-                .append("g")
-                .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x));
-
-              // Add Y axis
-              var y = d3
-                .scaleLinear()
-                .domain([minAmt, maxAmt])
-                .range([height, 0]);
-              svg.append("g").call(d3.axisLeft(y));
-
-              //toggles
-              var boolFlat1 = false,
-                boolFlat2 = false;
-              var idFlat1 = "";
-              idFlat2 = "";
-              //   function clickCheck() {
-              //     if (boolFlat1 == false) {
-              //       boolFlat1 = true;
-              //     }
-              //     if (boolFlat1 == true && boolFlat2 == false) {
-              //       boolFlat2 = true;
-              //     }
-              //     if (boolFlat1 == true && boolFlat2 == false) {}
-              //   }
-
-              // // Color scale: return colour based on domain
-              // var colorScale = d3
-              //   .scaleOrdinal()
-              //   .domain(["3 ROOM", "4 ROOM"])
-              //   .range(["red", "orange"]);
-
-              //count unique
-              // var typeCount = d3.count(color.domain);
-              // console.log("Count: " + typeCount);
-
-              //Get Unique Flat Types in Order
-              // const ages = [26, 27, 26, 26, 28, 28, 29, 29, 30]
-              // const result = Array.from(new Set(newData.map((d) => d.flat_type)));
-              var result = Array.from(
-                new Set(newData.map((d) => d.flat_type))
-              ).sort();
-              console.log(result);
-              console.log(result.length);
-              var colourRange = result.length;
-              if (colourRange < 3) {
-                colourRange = 3;
-              }
-              // console.log(d3.schemeGreys[colourRange]);
-              //colorScale
-              let colorScale = d3
-                .scaleOrdinal()
-                .domain(result)
-                // .domain([newData.flat_type])
-                // .range(d3.schemeGreys[3]);
-                .range(d3.schemeGreys[colourRange]);
-
-              //Legend
-              var legendX = 800;
-              var legendY = 600;
-              svg
-                .append("g")
-                .attr("class", "legend")
-                .attr(
-                  "transform",
-                  "translate(" + legendX + "," + legendY + ")"
-                );
-
-              var legend = d3
-                .legendColor()
-                .title("Flat Type Legend")
-                .shapeWidth(20)
-                // .labels(["3 ROOM", "4 ROOM", "5 ROOM"])
-                .labels(result)
-                // .orient("horizontal")
-                .scale(colorScale);
-
-              svg.select(".legend").call(legend);
-
-              // Add dots
-              svg
-                .append("g")
-                .selectAll("dot")
-                .data(newData)
-                .enter()
-                .append("circle")
-                .attr("cx", function (d) {
-                  // console.log(d.fMonth);
-                  return x(d.fMonth);
-                })
-                .attr("cy", function (d) {
-                  // console.log(d.resale_price);
-                  return y(d.resale_price);
-                })
-                .attr("r", 7)
-                .style("fill", function (d) {
-                  // console.log(d.flat_type);
-                  // console.log(
-                  //   "Flat type: " +
-                  //     d.flat_type +
-                  //     " Returned Colour: " +
-                  //     colorScale(d.flat_type)
-                  // );
-                  return colorScale(d.flat_type);
-                })
-                .on("mouseover", function (event, d) {
-                  //MouseOver
-                  //Show Selection
-                  d3.select(this)
-                    .transition()
-                    .duration(200)
-                    .style("stroke", "black")
-                    .style("opacity", 1.0)
-                    .style("stroke-width", 3);
-                })
-                .on("click", function (d) {
-                  //continue highlight
-                  var editing = false;
-
-                  if (boolFlat1 == false) {
-                    //check if match flat2 before add
-                    if (idFlat2 != d._id) {
-                      boolFlat1 = true;
-                      idFlat1 = d._id;
-                      d3.select("#flatInfo1")
-                        .style("opacity", 1)
-                        .style("text-align", "left")
-                        .html(
-                          "<div>Flat Info" +
-                            "<br />Town: " +
-                            d.town +
-                            "<br />Block: " +
-                            d.block +
-                            "<br />Street Name: " +
-                            d.street_name +
-                            "<br />Flat Model: " +
-                            d.flat_model +
-                            "<br />Flat Type: " +
-                            d.flat_type +
-                            "<br />Floor Area sqm: " +
-                            d.floor_area_sqm +
-                            "<br />Lease Commence Date: " +
-                            d.lease_commence_date +
-                            "<br />Remaining Lease: " +
-                            d.remaining_lease +
-                            "<br />Month: " +
-                            d.month +
-                            "<br />Rank: " +
-                            d.rank +
-                            "<br />Resale Price: " +
-                            d.resale_price +
-                            "<br />Storey Range: " +
-                            d.storey_range +
-                            "<br />ID: " +
-                            d._id +
-                            "</div>"
-                        );
-                      console.log(
-                        "changed boolflat1 boolean to true with id " + idFlat1
-                      );
-                      editing = true;
-                    }
-                  } else if (boolFlat2 == false) {
-                    //check if flat1 is
-                    if (idFlat1 != d._id) {
-                      boolFlat2 = true;
-                      idFlat2 = d._id;
-                      d3.select("#flatInfo2")
-                        .style("opacity", 1)
-                        .style("text-align", "left")
-                        .html(
-                          "<div>Flat Info" +
-                            "<br />Town: " +
-                            d.town +
-                            "<br />Block: " +
-                            d.block +
-                            "<br />Street Name: " +
-                            d.street_name +
-                            "<br />Flat Model: " +
-                            d.flat_model +
-                            "<br />Flat Type: " +
-                            d.flat_type +
-                            "<br />Floor Area sqm: " +
-                            d.floor_area_sqm +
-                            "<br />Lease Commence Date: " +
-                            d.lease_commence_date +
-                            "<br />Remaining Lease: " +
-                            d.remaining_lease +
-                            "<br />Month: " +
-                            d.month +
-                            "<br />Rank: " +
-                            d.rank +
-                            "<br />Resale Price: " +
-                            d.resale_price +
-                            "<br />Storey Range: " +
-                            d.storey_range +
-                            "<br />ID: " +
-                            d._id +
-                            "</div>"
-                        );
-                      console.log(
-                        "changed boolflat2 boolean to true with id " + idFlat2
-                      );
-                      editing = true;
-                    }
-                  }
-
-                  if (d._id == idFlat1 && editing == false) {
-                    if (boolFlat1 == true) {
-                      boolFlat1 = false;
-                      idFlat1 = 0;
-                      d3.select("#flatInfo1")
-                        .style("opacity", 1)
-                        .style("text-align", "left")
-                        .html("");
-                      console.log(
-                        "changed boolflat1 boolean to false with id " + idFlat1
-                      );
-                    }
-                  } else if (d._id == idFlat2 && editing == false) {
-                    if (boolFlat2 == true) {
-                      boolFlat2 = false;
-                      idFlat2 = 0;
-                      d3.select("#flatInfo2")
-                        .style("opacity", 1)
-                        .style("text-align", "left")
-                        .html("");
-                      console.log(
-                        "changed boolflat2 boolean to false with id " + idFlat2
-                      );
-                    }
-                  }
-
-                  //if selection matches either
-                  if (idFlat1 == d._id) {
-                    console.log(
-                      "changed boolflat1 boolean to true with id " + idFlat1
-                    );
-
-                    d3.select(this)
-                      .style("stroke", "black")
-                      .style("opacity", 1.0)
-                      .style("stroke-width", 3);
-                  }
-                  if (idFlat2 == d._id) {
-                    console.log(
-                      "changed boolflat2 boolean to true with id " + idFlat1
-                    );
-
-                    d3.select(this)
-                      .style("stroke", "black")
-                      .style("opacity", 1.0)
-                      .style("stroke-width", 3);
-                  }
-                })
-                .on("mouseleave", function (d) {
-                  if (
-                    (boolFlat1 == true && idFlat1 == d._id) ||
-                    (boolFlat2 == true && idFlat2 == d._id)
-                  ) {
-                    console.log("selected so do nothing");
-                  } else {
-                    //MouseLeave
-                    d3.select(this)
-                      .transition()
-                      .duration(300)
-                      .style("stroke", "none")
-                      .style("opacity", 1.0)
-                      .attr("stroke-width", 0);
-                  }
-                });
-
-              //regressionLine
-              // linearRegression = d3
-              //   .regressionLinear()
-              //   .x((d) => d.x)
-              //   .y((d) => d.y);
-              // // .domain([-1.7, 16]);
-
-              // const data = [
-              //   [0, 2],
-              //   [1, 1],
-              //   [2, 0],
-              // ];
-              const r = d3
-                .regressionLinear()
-                .x((d) => d.fMonth)
-                .y((d) => d.resale_price)(newData);
-              // const rLine = r(newData.)
-              // console.log(r);
-              // console.log(r[0][0]);
-              // console.log(r[0][1]);
-              // console.log(r[1][0]);
-              // console.log(r[1][1]);
-              // console.log(r.a);
-              // console.log(r.b);
-              // console.log(r.rSquared);
-              // console.log(r.length);
-
-              let line = d3
-                .line()
-                .x((d) => x(d[0]))
-                .y((d) => y(d[1]));
-
-              svg
-                .append("path")
-                .datum(r)
-                .attr("d", line)
-                .style("stroke", "black")
-                .style("stroke-width", "2px");
-            }
-
-      function retrieveDataFilterAll() {
-         var queryVal = document.getElementById("query").value;
-
-        //for further filter
-        var queryBlock = queryVal.split(" ").shift();
-        var indexOfSpace = queryVal.indexOf(" ");
-        if (indexOfSpace === -1) {
-          var queryStreet = "";
-        } else {
-          var queryStreet = queryVal.substring(indexOfSpace + 1);
-        }
-
-        console.log("Block: " + queryBlock + " Street: " + queryStreet);
-        console.log("Finding: " + queryVal);
-
-        //Retrieve static
-        d3.queue()
-          .defer(
-            d3.csv,
-            "https://raw.githubusercontent.com/gohruhui/CSC3007-project/master/data/1990.csv"
-          )
-          .defer(
-            d3.csv,
-            "https://raw.githubusercontent.com/gohruhui/CSC3007-project/master/data/2000.csv"
-          )
-          .defer(
-            d3.csv,
-            "https://raw.githubusercontent.com/gohruhui/CSC3007-project/master/data/2012.csv"
-          )
-          .defer(
-            d3.csv,
-            "https://raw.githubusercontent.com/gohruhui/CSC3007-project/master/data/2015.csv"
-          )
-          .defer(
-            d3.csv,
-            "https://raw.githubusercontent.com/gohruhui/CSC3007-project/master/data/2017.csv"
-          )
-          .await(function (error, file1, file2, file3, file4, file5) {
-            if (error) {
-              console.error(error);
-            } else {
-              // console.log("do stuff");
-              // console.log(file1);
-              // console.log(file2);
-              // console.log(file3);
-              // console.log(file4);
-              // console.log(file5);
-
-              // console.log("check");
-              // var data = file1;
-              // data += file2;
-              // data += file3;
-              // data += file4;
-              // data += file5;
-
-              // console.log(data);
-              // console.log(data);
-
-              //month-year formatter
-              const parseDate = d3.timeParse("%Y-%m");
-
-              var newData = [];
-
-              //look for and add accordingly
-              for (const entry in file1) {
-                // console.log(data[entry].month);
-                var one = file1[entry];
-                if (
-                  one.block == queryBlock.toUpperCase() &&
-                  one.street_name == queryStreet.toUpperCase()
-                ) {
-                  // console.log("found");
-                  // console.log(one);
-                  //format month-year
-                  // console.log("original");
-                  // console.log(data[key].month);
-                  // console.log("Check");
-                  // console.log(parseDate(data[key].month));
-                  one.fMonth = parseDate(one.month);
-                  one._id = entry;
-                  // console.log("Final");
-                  // console.log(entry.fMonth);
-
-                  // console.log(entry);
-                  // console.log(entry._id);
-                  newData.push(one);
-                }
-              } //loop through data
-
-              //look for and add accordingly
-              for (const entry in file2) {
-                // console.log(data[entry].month);
-                var one = file2[entry];
-                if (
-                  one.block == queryBlock.toUpperCase() &&
-                  one.street_name == queryStreet.toUpperCase()
-                ) {
-                  // console.log("found");
-                  // console.log(one);
-                  //format month-year
-                  // console.log("original");
-                  // console.log(data[key].month);
-                  // console.log("Check");
-                  // console.log(parseDate(data[key].month));
-                  one.fMonth = parseDate(one.month);
-                  one._id = entry;
-                  // console.log("Final");
-                  // console.log(entry.fMonth);
-
-                  // console.log(entry);
-                  // console.log(entry._id);
-                  newData.push(one);
-                }
-              } //loop through data
-
-              //look for and add accordingly
-              for (const entry in file3) {
-                // console.log(data[entry].month);
-                var one = file3[entry];
-                if (
-                  one.block == queryBlock.toUpperCase() &&
-                  one.street_name == queryStreet.toUpperCase()
-                ) {
-                  // console.log("found");
-                  // console.log(one);
-                  //format month-year
-                  // console.log("original");
-                  // console.log(data[key].month);
-                  // console.log("Check");
-                  // console.log(parseDate(data[key].month));
-                  one.fMonth = parseDate(one.month);
-                  one._id = entry;
-                  // console.log("Final");
-                  // console.log(entry.fMonth);
-
-                  // console.log(entry);
-                  // console.log(entry._id);
-                  newData.push(one);
-                }
-              } //loop through data
-
-              //look for and add accordingly
-              for (const entry in file4) {
-                // console.log(data[entry].month);
-                var one = file4[entry];
-                if (
-                  one.block == queryBlock.toUpperCase() &&
-                  one.street_name == queryStreet.toUpperCase()
-                ) {
-                  // console.log("found");
-                  // console.log(one);
-                  //format month-year
-                  // console.log("original");
-                  // console.log(data[key].month);
-                  // console.log("Check");
-                  // console.log(parseDate(data[key].month));
-                  one.fMonth = parseDate(one.month);
-                  one._id = entry;
-                  // console.log("Final");
-                  // console.log(entry.fMonth);
-
-                  // console.log(entry);
-                  // console.log(entry._id);
-                  newData.push(one);
-                }
-              } //loop through data
-
-              //look for and add accordingly
-              for (const entry in file5) {
-                // console.log(data[entry].month);
-                var one = file5[entry];
-                if (
-                  one.block == queryBlock.toUpperCase() &&
-                  one.street_name == queryStreet.toUpperCase()
-                ) {
-                  // console.log("found");
-                  // console.log(one);
-                  //format month-year
-                  // console.log("original");
-                  // console.log(data[key].month);
-                  // console.log("Check");
-                  // console.log(parseDate(data[key].month));
-                  one.fMonth = parseDate(one.month);
-                  one._id = entry;
-                  // console.log("Final");
-                  // console.log(entry.fMonth);
-
-                  // console.log(entry);
-                  // console.log(entry._id);
-                  newData.push(one);
-                }
-              } //loop through data
-
-              //check new data
-              console.log(newData);
-
-              plot(newData);
-
-              gData = newData;
-                    }
-          });
-      } //retrieveDataFilterAll
-
-      //   var queryLink =
-      //     "https://data.gov.sg/api/action/datastore_search?resource_id=f1765b54-a209-4718-8d38-a39237f502b3&q=" +
-      //     queryVal;
-
-      //   fetch(queryLink)
-      //     .then((response) => response.json())
-      //     .then(function (data) {
-      //       var totalRecord = data.result.total;
-      //       console.log(
-      //         "Total Record for query " + queryVal + " is " + totalRecord
-      //       );
-      //       for (let i = 0; i < totalRecord; i += 100) {
-      //         console.log(i);
-      //       }
-
-      //       //comb through data and get exact block and street
-      //       tempData = data.result.records;
-      //       console.log(tempData);
-
-      //       //month-year formatter
-      //       const parseDate = d3.timeParse("%Y-%m");
-      //       // console.log("Test parser:" + parseDate("2017-03"));
-      //       //clean data
-      //       var newData = [];
-      //       for (var key in tempData) {
-      //         var entry = tempData[key];
-
-      //         //check and filter data
-      //         if (
-      //           entry.block == queryBlock.toUpperCase() &&
-      //           entry.street_name == queryStreet.toUpperCase()
-      //         ) {
-      //           // console.log("found");
-      //           //format month-year
-      //           // console.log("original");
-      //           // console.log(data[key].month);
-      //           // console.log("Check");
-      //           // console.log(parseDate(data[key].month));
-      //           entry.fMonth = parseDate(entry.month);
-      //           // console.log("Final");
-      //           // console.log(entry.fMonth);
-
-      //           // console.log(entry);
-      //           // console.log(entry._id);
-      //           newData.push(entry);
-      //         }
-      //       }
-      //       console.log(newData);
-
-      //       //get minmax time period
-      //       var minDate = d3.min(newData.map((d) => d.fMonth));
-      //       var maxDate = d3.max(newData.map((d) => d.fMonth));
-      //       console.log("MinDate: " + minDate + "Max Date: " + maxDate);
-
-      //       //get minmax val
-      //       var minAmt = d3.min(newData.map((d) => d.resale_price));
-      //       var maxAmt = d3.max(newData.map((d) => d.resale_price));
-
-      //       // d3.json(
-      //       // "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv",
-      //       // function (data) {
-
-      //       // Add X axis
-      //       // var x = d3.scaleLinear().domain([4, 8]).range([0, width]);
-      //       var x = d3.scaleTime().domain([minDate, maxDate]).range([0, width]);
-      //       svg
-      //         .append("g")
-      //         .attr("transform", "translate(0," + height + ")")
-      //         .call(d3.axisBottom(x));
-
-      //       // Add Y axis
-      //       var y = d3
-      //         .scaleLinear()
-      //         .domain([minAmt, maxAmt])
-      //         .range([height, 0]);
-      //       svg.append("g").call(d3.axisLeft(y));
-
-      //       //toggles
-      //       var boolFlat1 = false,
-      //         boolFlat2 = false;
-      //       var idFlat1 = "";
-      //       idFlat2 = "";
-      //       //   function clickCheck() {
-      //       //     if (boolFlat1 == false) {
-      //       //       boolFlat1 = true;
-      //       //     }
-      //       //     if (boolFlat1 == true && boolFlat2 == false) {
-      //       //       boolFlat2 = true;
-      //       //     }
-      //       //     if (boolFlat1 == true && boolFlat2 == false) {}
-      //       //   }
-
-      //       // // Color scale: return colour based on domain
-      //       // var color = d3
-      //       //   .scaleOrdinal()
-      //       //   .domain(["3 ROOM", "4 ROOM", "5 ROOM"])
-      //       //   .range(["red", "orange", "yellow"]);
-
-      //       //count unique
-      //       // var typeCount = d3.count(color.domain);
-      //       // console.log("Count: " + typeCount);
-
-      //       //Get Unique Flat Types in Order
-      //       // const ages = [26, 27, 26, 26, 28, 28, 29, 29, 30]
-      //       // const result = Array.from(new Set(newData.map((d) => d.flat_type)));
-      //       var result = Array.from(
-      //         new Set(newData.map((d) => d.flat_type))
-      //       ).sort();
-      //       console.log(result);
-      //       console.log(result.length);
-      //       var colourRange = result.length;
-      //       console.log(d3.schemeGreys[colourRange]);
-      //       //colorScale
-      //       let colorScale = d3
-      //         .scaleOrdinal()
-      //         .domain(result)
-      //         // .domain([newData.flat_type])
-      //         // .range(d3.schemeGreys[3]);
-      //         .range(d3.schemeGreys[colourRange]);
-
-      //       //Legend
-      //       var legendX = 800;
-      //       var legendY = 600;
-      //       svg
-      //         .append("g")
-      //         .attr("class", "legend")
-      //         .attr("transform", "translate(" + legendX + "," + legendY + ")");
-
-      //       var legend = d3
-      //         .legendColor()
-      //         .title("Flat Type Legend")
-      //         .shapeWidth(20)
-      //         // .labels(["3 ROOM", "4 ROOM", "5 ROOM"])
-      //         .labels(result)
-      //         // .orient("horizontal")
-      //         .scale(colorScale);
-
-      //       svg.select(".legend").call(legend);
-
-      //       // Add dots
-      //       svg
-      //         .append("g")
-      //         .selectAll("dot")
-      //         .data(newData)
-      //         .enter()
-      //         .append("circle")
-      //         .attr("cx", function (d) {
-      //           // console.log(d.fMonth);
-      //           return x(d.fMonth);
-      //         })
-      //         .attr("cy", function (d) {
-      //           // console.log(d.resale_price);
-      //           return y(d.resale_price);
-      //         })
-      //         .attr("r", 7)
-      //         .style("fill", function (d) {
-      //           // console.log(d.flat_type);
-      //           // console.log(
-      //           //   "Flat type: " +
-      //           //     d.flat_type +
-      //           //     " Returned Colour: " +
-      //           //     colorScale(d.flat_type)
-      //           // );
-      //           return colorScale(d.flat_type);
-      //         })
-      //         .on("mouseover", function (event, d) {
-      //           //MouseOver
-      //           //Show Selection
-      //           d3.select(this)
-      //             .transition()
-      //             .duration(200)
-      //             .style("stroke", "black")
-      //             .style("opacity", 1.0)
-      //             .style("stroke-width", 3);
-      //         })
-      //         .on("click", function (d) {
-      //           //continue highlight
-      //           var editing = false;
-
-      //           if (boolFlat1 == false) {
-      //             //check if match flat2 before add
-      //             if (idFlat2 != d._id) {
-      //               boolFlat1 = true;
-      //               idFlat1 = d._id;
-      //               d3.select("#flatInfo1")
-      //                 .style("opacity", 1)
-      //                 .style("text-align", "left")
-      //                 .html(
-      //                   "<div>Flat Info" +
-      //                     "<br />Town: " +
-      //                     d.town +
-      //                     "<br />Block: " +
-      //                     d.block +
-      //                     "<br />Street Name: " +
-      //                     d.street_name +
-      //                     "<br />Flat Model: " +
-      //                     d.flat_model +
-      //                     "<br />Flat Type: " +
-      //                     d.flat_type +
-      //                     "<br />Floor Area sqm: " +
-      //                     d.floor_area_sqm +
-      //                     "<br />Lease Commence Date: " +
-      //                     d.lease_commence_date +
-      //                     "<br />Remaining Lease: " +
-      //                     d.remaining_lease +
-      //                     "<br />Month: " +
-      //                     d.month +
-      //                     "<br />Rank: " +
-      //                     d.rank +
-      //                     "<br />Resale Price: " +
-      //                     d.resale_price +
-      //                     "<br />Storey Range: " +
-      //                     d.storey_range +
-      //                     "<br />ID: " +
-      //                     d._id +
-      //                     "</div>"
-      //                 );
-      //               console.log(
-      //                 "changed boolflat1 boolean to true with id " + idFlat1
-      //               );
-      //               editing = true;
-      //             }
-      //           } else if (boolFlat2 == false) {
-      //             //check if flat1 is
-      //             if (idFlat1 != d._id) {
-      //               boolFlat2 = true;
-      //               idFlat2 = d._id;
-      //               d3.select("#flatInfo2")
-      //                 .style("opacity", 1)
-      //                 .style("text-align", "left")
-      //                 .html(
-      //                   "<div>Flat Info" +
-      //                     "<br />Town: " +
-      //                     d.town +
-      //                     "<br />Block: " +
-      //                     d.block +
-      //                     "<br />Street Name: " +
-      //                     d.street_name +
-      //                     "<br />Flat Model: " +
-      //                     d.flat_model +
-      //                     "<br />Flat Type: " +
-      //                     d.flat_type +
-      //                     "<br />Floor Area sqm: " +
-      //                     d.floor_area_sqm +
-      //                     "<br />Lease Commence Date: " +
-      //                     d.lease_commence_date +
-      //                     "<br />Remaining Lease: " +
-      //                     d.remaining_lease +
-      //                     "<br />Month: " +
-      //                     d.month +
-      //                     "<br />Rank: " +
-      //                     d.rank +
-      //                     "<br />Resale Price: " +
-      //                     d.resale_price +
-      //                     "<br />Storey Range: " +
-      //                     d.storey_range +
-      //                     "<br />ID: " +
-      //                     d._id +
-      //                     "</div>"
-      //                 );
-      //               console.log(
-      //                 "changed boolflat2 boolean to true with id " + idFlat2
-      //               );
-      //               editing = true;
-      //             }
-      //           }
-
-      //           if (d._id == idFlat1 && editing == false) {
-      //             if (boolFlat1 == true) {
-      //               boolFlat1 = false;
-      //               idFlat1 = 0;
-      //               d3.select("#flatInfo1")
-      //                 .style("opacity", 1)
-      //                 .style("text-align", "left")
-      //                 .html("");
-      //               console.log(
-      //                 "changed boolflat1 boolean to false with id " + idFlat1
-      //               );
-      //             }
-      //           } else if (d._id == idFlat2 && editing == false) {
-      //             if (boolFlat2 == true) {
-      //               boolFlat2 = false;
-      //               idFlat2 = 0;
-      //               d3.select("#flatInfo2")
-      //                 .style("opacity", 1)
-      //                 .style("text-align", "left")
-      //                 .html("");
-      //               console.log(
-      //                 "changed boolflat2 boolean to false with id " + idFlat2
-      //               );
-      //             }
-      //           }
-
-      //           //if selection matches either
-      //           if (idFlat1 == d._id) {
-      //             console.log(
-      //               "changed boolflat1 boolean to true with id " + idFlat1
-      //             );
-
-      //             d3.select(this)
-      //               .style("stroke", "black")
-      //               .style("opacity", 1.0)
-      //               .style("stroke-width", 3);
-      //           }
-      //           if (idFlat2 == d._id) {
-      //             console.log(
-      //               "changed boolflat2 boolean to true with id " + idFlat1
-      //             );
-
-      //             d3.select(this)
-      //               .style("stroke", "black")
-      //               .style("opacity", 1.0)
-      //               .style("stroke-width", 3);
-      //           }
-      //         })
-      //         .on("mouseleave", function (d) {
-      //           if (
-      //             (boolFlat1 == true && idFlat1 == d._id) ||
-      //             (boolFlat2 == true && idFlat2 == d._id)
-      //           ) {
-      //             console.log("selected so do nothing");
-      //           } else {
-      //             //MouseLeave
-      //             d3.select(this)
-      //               .transition()
-      //               .duration(300)
-      //               .style("stroke", "none")
-      //               .style("opacity", 1.0)
-      //               .attr("stroke-width", 0);
-      //           }
-      //         });
-
-      //       //regressionLine
-      //       // linearRegression = d3
-      //       //   .regressionLinear()
-      //       //   .x((d) => d.x)
-      //       //   .y((d) => d.y);
-      //       // // .domain([-1.7, 16]);
-
-      //       // const data = [
-      //       //   [0, 2],
-      //       //   [1, 1],
-      //       //   [2, 0],
-      //       // ];
-      //       const r = d3
-      //         .regressionLinear()
-      //         .x((d) => d.fMonth)
-      //         .y((d) => d.resale_price)(newData);
-      //       // const rLine = r(newData.)
-      //       // console.log(r);
-      //       // console.log(r[0][0]);
-      //       // console.log(r[0][1]);
-      //       // console.log(r[1][0]);
-      //       // console.log(r[1][1]);
-      //       // console.log(r.a);
-      //       // console.log(r.b);
-      //       // console.log(r.rSquared);
-      //       // console.log(r.length);
-
-      //       let line = d3
-      //         .line()
-      //         .x((d) => x(d[0]))
-      //         .y((d) => y(d[1]));
-
-      //       svg
-      //         .append("path")
-      //         .datum(r)
-      //         .attr("d", line)
-      //         .style("stroke", "black")
-      //         .style("stroke-width", "2px");
-      //     }); //fetch-then
-      // } //retrieveData
-
-    </script>
-  </body>
+    <!-- About SGP.fyi-->
+    <div>
+        <section class="sgp-section-featured sgp-section-featured-2 sgp-animate">
+            <div class="container-fluid" data-scrollax-parent="true">
+                <div class="row mt-5 d-flex justify-content-center">
+                    <div class="col-md-8 text-center heading-section sgp-animate">
+                        <span class="subheading">About</span>
+                        <h2 class="h1">Easy way to find information regarding <strong class="px-3">Singapore's public
+                                housing transactions</strong></h2>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section style="background-color:#fffbfb;">
+        <div class="container">
+            <div class="row block-3">
+                <div class="col-6">
+                    <div class="spacer s2"></div>
+                    <div id="trigger3" class="spacer s0"></div>
+                    <section id="animate1" class="demo sgp-section">
+
+                        <div id="pin3" class="box2">
+                            <div class="wrap">
+                                <img style="width: 100%;" src="images/visualization.png">
+                            </div>
+                        </div>
+
+                    </section>
+                </div>
+                <div class="col-6 pr-0">
+                    <div class="text sgp-section sgp-animate" id="pin2">
+                        <h4 class="subheading" style="color:#efac78">Why</h4>
+                        <h2 class="heading">What is the long term price change / fluctuations on a particular HDB block?
+                        </h2>
+                    </div>
+                    <div class="text sgp-section sgp-animate">
+                        <h4 class="subheading" style="color:#efac78">What</h4>
+                        <b>Data</b>
+                        <p>month, town, flat type, block, street name, storey range, floor area sqm, flat model, lease
+                            commence date, remaining lease and resale price</p>
+                        <b>Data on hover</b>
+                        <p>year-month, resale amount, storey range, total square meters, price per square feet, flat
+                            type, flat model of each transaction</p>
+
+                    </div>
+                    <div class="text sgp-section sgp-animate">
+                        <h4 class="subheading" style="color:#efac78">How</h4>
+                        <p>The idiom chosen is a <strong class="px-3"
+                                style="background:#fdf2ea; color:#efac78; font-weight:bold;">scatter plot</strong> which
+                            shows the resale transaction for the selected block.
+                            Each coloured point of varying size on the scatter plot indisactes a past resale
+                            transaction.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="bg-light">
+        <section class="sgp-section">
+            <div class="container">
+                <div class="row justify-content-center mb-5 pb-5">
+                    <div class="col-md-6 text-center heading-section sgp-animate">
+                        <span class="subheading">Critics</span>
+                        <h2 class="mb-4">What is done poorly</h2>
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-md-6 col-lg-3 d-flex align-self-stretch sgp-animate">
+                        <div class="media block-6 services d-block text-center">
+                            <div class="d-flex justify-content-center">
+                                <div class="icon color-3 d-flex justify-content-center mb-3"><span
+                                        class="align-self-center icon-pencil"></span></div>
+                            </div>
+                            <div class="media-body p-2 mt-3">
+                                <p>Color and Size of each point does not mean anything.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3 d-flex align-self-stretch sgp-animate">
+                        <div class="media block-6 services d-block text-center">
+                            <div class="d-flex justify-content-center">
+                                <div class="icon color-1 d-flex justify-content-center mb-3"><span
+                                        class="align-self-center icon-mouse-pointer"></span></div>
+                            </div>
+                            <div class="media-body p-2 mt-3">
+                                <p>Difficult to visually compare between transaction details.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3 d-flex align-self-stretch sgp-animate">
+                        <div class="media block-6 services d-block text-center">
+                            <div class="d-flex justify-content-center">
+                                <div class="icon color-2 d-flex justify-content-center mb-3"><span
+                                        class="align-self-center icon-mobile"></span></div>
+                            </div>
+                            <div class="media-body p-2 mt-3">
+                                <p>Not responsive and does not fit the screen.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3 d-flex align-self-stretch sgp-animate">
+                        <div class="media block-6 services d-block text-center">
+                            <div class="d-flex justify-content-center">
+                                <div class="icon color-4 d-flex justify-content-center mb-3"><span
+                                        class="align-self-center icon-trending_up"></span></div>
+                            </div>
+                            <div class="media-body p-2 mt-3">
+                                <p>Users are not able to understand the trend.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="sgp-section" style="background-color: #fffbfb;">
+        <div class="container">
+            <div class="row justify-content-center mb-5 pb-5">
+                <div class="col-md-6 text-center heading-section sgp-animate">
+                    <span class="subheading">Improvements</span>
+                    <h2 class="mb-4">How can the visualization be improved</h2>
+                    <a href="">Click here to view the interactive visualization!</a>
+                </div>
+            </div>
+            <div class="row mb-5 sgp-animate">
+                <div class="col-lg-5 col-12">
+                    <span class="subheading"
+                        style="font-size:13px; text-transform: uppercase; font-weight:400; letter-spacing: 2px; color: rgba(0,0,0,0.2)">User
+                        Interface / Idioms</span>
+
+                    <div class="mt-3">
+                        <h3>01</h3>
+                        <p>Have same sized points in the scatter plot</p>
+                        <h3>02</h3>
+                        <p>Linear regression line - to show the trend of a property based on the variables </p>
+                        <h3>03</h3>
+                        <p>Each point can be coloured based on a colour spectrum (of light to dark colours), indicating
+                            the
+                            flat type</p>
+                    </div>
+
+
+
+
+                </div>
+                <div class="col-lg-2 d-12-none">
+                    <div class="vl"></div>
+                </div>
+
+                <div class="col-lg-5 col-12"><span class="subheading"
+                        style="font-size:13px; text-transform: uppercase; font-weight:400; letter-spacing: 2px; color: rgba(0,0,0,0.2)">Interactions</span>
+                    <div class="mt-3">
+                        <h3>01</h3>
+                        <p>Allows users to select up to 2 points to compare the resale transaction</p>
+                        <h3>02</h3>
+                        <p>Checkbox function can be implemented to allow user to filter based on story range</p>
+                        <h3>03</h3>
+                        <p>The coloured points (flat type) and filtering based on storey range allows a fair comparison
+                            of
+                            equal basis - for e.g. allows the user to further examine the flat model etc</p>
+
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </section>
+
+    <section class="sgp-section bg-light">
+        <div class="container">
+            <div class="row justify-content-center mb-5 pb-5">
+                <div class="col-md-7 text-center heading-section sgp-animate">
+                    <span class="subheading">Tech Stacks</span>
+                    <h2 class="mb-4">Teck Stacks used for this project</h2>
+                </div>
+            </div>
+            <div class="row mb-5">
+                <div class="col-md-6 col-lg-3 d-flex align-self-stretch sgp-animate" style="justify-content: center;">
+                    <div class="media block-6 services d-block text-center">
+                        <div class="d-flex justify-content-center">
+                            <div class="mb-4"
+                                style="background-image: url(images/html.png); width:100px; height: 100px; border-radius: 50%; margin: 0 auto; position: relative; background-size:cover; background-repeat: no-repeat; background-position: center center;">
+                            </div>
+                        </div>
+                        <div class="media-body p-2 mt-3">
+                            <h3 class="heading">HTML</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 d-flex align-self-stretch sgp-animate" style="justify-content: center;">
+                    <div class="media block-6 services d-block text-center">
+                        <div class="d-flex justify-content-center">
+                            <div class="mb-4"
+                                style="background-image: url(images/bootstrap.png); width:100px; height: 100px; border-radius: 50%; margin: 0 auto; position: relative; background-size:cover; background-repeat: no-repeat; background-position: center center;">
+                            </div>
+                        </div>
+                        <div class="media-body p-2 mt-3">
+                            <h3 class="heading">Bootstrap</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 d-flex align-self-stretch sgp-animate" style="justify-content: center;">
+                    <div class="media block-6 services d-block text-center">
+                        <div class="d-flex justify-content-center">
+                            <div class="mb-4"
+                                style="background-image: url(images/css.png); width:100px; height: 100px; border-radius: 50%; margin: 0 auto; position: relative; background-size:cover; background-repeat: no-repeat; background-position: center center;">
+                            </div>
+                        </div>
+                        <div class="media-body p-2 mt-3">
+                            <h3 class="heading">CSS</h3>
+                            <p style="color:#8b8b92">animate.css, icomoon.css</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 d-flex align-self-stretch sgp-animate" style="justify-content: center;">
+                    <div class="media block-6 services d-block text-center">
+                        <div class="d-flex justify-content-center">
+                            <div class="mb-4"
+                                style="background-image: url(images/d3.png); width:100px; height: 100px; border-radius: 50%; margin: 0 auto; position: relative; background-size:cover; background-repeat: no-repeat; background-position: center center;">
+                            </div>
+                        </div>
+                        <div class="media-body p-2 mt-3">
+                            <h3 class="heading">D3.js</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+    <section class="sgp-section" style="background-color:#fffbfb">
+        <div class="container">
+            <div class="row justify-content-center mb-5 pb-5">
+                <div class="col-md-6 text-center heading-section sgp-animate">
+                    <span class="subheading">Future Works</span>
+                    <h2 class="mb-4">How to further improve the visualization</h2>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-md-4 sgp-animate">
+                    <div class="list-services">
+                        <h3>01</h3>
+                        <p>Add dropdown to the chart to <b>filter the results by the year of transaction</b></p>
+                    </div>
+                </div>
+                <div class="col-md-4 sgp-animate">
+                    <div class="list-services">
+                        <h3>02</h3>
+                        <p>Have a section to <b>explain the technical terms</b>. E.g. Flat model</p>
+                    </div>
+                </div>
+                <div class="col-md-4 sgp-animate">
+                    <div class="list-services">
+                        <h3>03</h3>
+                        <p>Expand the target audience to target users who wants to <b>explore the different transactions
+                                around the area</b> instead of specific block</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="sgp-section contributions-section">
+        <div class="container">
+            <div class="row justify-content-center mb-5 pb-5">
+                <div class="col-md-7 text-center heading-section sgp-animate">
+                    <span class="subheading">Reflections</span>
+                    <h2 class="mb-4">List of Contributions & Reflections</h2>
+                </div>
+            </div>
+            <div class="row sgp-animate" style="min-height: 100%;">
+                <div class="col-lg-4 col-12 mb-5 item text-center" style="min-height: inherit;">
+                    <div class="contributions-wrap p-4 pb-5" style="min-height: inherit;">
+                        <div class="user-img mb-4" style="background-image: url(images/ruhui-avatar.png)">
+                        </div>
+                        <div class="text">
+                            <span class="subheading"
+                                style="font-size: 13px; font-weight: bold; font-style: italic; color: rgba(0, 0, 0, 0.2);">Contributions</span>
+                            <ul class="list-services" style="margin-top: 0;">
+                                <li>Conceptualization of idea</li>
+                                <li>Creation of interactive chart</li>
+                            </ul>
+                            <span class="subheading"
+                                style="font-size: 13px; font-weight: bold; font-style: italic; color: rgba(0, 0, 0, 0.2);">Reflection</span>
+                            <p style="font-style: italic;">"I had a slight delay in project due to pre-processing of the
+                                huge dataset..."</p>
+                            <p class="name">Goh Ru Hui</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-12 mb-5 item text-center" style="min-height: inherit;">
+                    <div class="contributions-wrap p-4 pb-5" style="min-height: inherit;">
+                        <div class="user-img mb-4" style="background-image: url(images/jy-avatar.png)">
+                        </div>
+                        <div class="text">
+                            <span class="subheading"
+                                style="font-size: 13px; font-weight: bold; font-style: italic; color: rgba(0, 0, 0, 0.2);">Contributions</span>
+                            <ul class="list-services" style="margin-top: 0;">
+                                <li>Conceptualization of idea</li>
+                                <li>Creation of the layout and design of website</li>
+                            </ul>
+                            <span class="subheading"
+                                style="font-size: 13px; font-weight: bold; font-style: italic; color: rgba(0, 0, 0, 0.2);">Reflection</span>
+                            <p style="font-style: italic;">"I had no blockers for the development of the pages, but
+                                spent quite some time to try out Javascript libraries online for better visualization."
+                            </p>
+                            <p class="name">Tee Jun Yun</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-12 mb-5 item text-center" style="min-height: inherit;">
+                    <div class="contributions-wrap p-4 pb-5" style="min-height: inherit;">
+                        <div class="user-img mb-4" style="background-image: url(images/yx-avatar.png)">
+                        </div>
+                        <div class="text">
+                            <span class="subheading"
+                                style="font-size: 13px; font-weight: bold; font-style: italic; color: rgba(0, 0, 0, 0.2);">Contributions</span>
+                            <ul class="list-services" style="margin-top: 0;">
+                                <li>Conceptualization of idea</li>
+                                <li>Creation of the layout and design of website</li>
+                                <li>Creation of interactive chart</li>
+
+                            </ul>
+                            <span class="subheading"
+                                style="font-size: 13px; font-weight: bold; font-style: italic; color: rgba(0, 0, 0, 0.2);">Reflection</span>
+                            <p style="font-style: italic;">"I spent some time trying to work on the data pre-processing
+                                together with Ru Hui and research on examples to improve website storytelling."</p>
+                            <p class="name">Teo Yi Xiang</p>
+
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        </div>
+    </section>
+
+
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/particles.min.js"></script>
+    <script src="js/particle.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+
+
+</body>
+
 </html>

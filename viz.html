@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>CSC3007 - Milestone 2</title>
+    <meta charset="utf-8" />
+    <!-- Load d3.js -->
+    <script src="https://unpkg.com/d3-regression@1.3.10/dist/d3-regression.min.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <!-- <script src="https://d3js.org/d3.v6.js"></script> -->
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script>
+
+    <style>
+      .parent {
+        /* border: 1px solid black; */
+        /* margin: 1rem; */
+        /* padding: 2rem 2rem; */
+        text-align: center;
+      }
+      .child {
+        display: inline-block;
+        /* border: 1px solid red; */
+        /* padding: 1rem 1rem; */
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div style="text-align: center">
+      <h2 style="text-align: center">HDB Task 1 Scatterplot Chart</h2>
+      <label for="lQuery">Query:</label>
+      <input
+        type="text"
+        id="query"
+        name="query"
+        value="310a punggol walk"
+      /><br />
+      <label for="lFilter">Storey Range: </label>
+      <input class="filter_button" id="low_button" type="checkbox" onclick="filterLow();">Low (01 to 03) </input>
+      <input class="filter_button" id="mid_button" type="checkbox" onclick="filterMid();">Mid (04 to 09)</input>
+      <input class="filter_button" id="high_button" type="checkbox" onclick="filterHigh();">High (10 and above)</input>
+      <button onclick="retrieveDataFilterAll()">Retrieve</button><br />
+      <!-- Create a div where the graph will take place -->
+      <div class="parent">
+        <div id="my_dataviz" class="child"></div>
+        <div id="flatInfo1" class="child"></div>
+        <div id="flatInfo2" class="child"></div>
+      </div>
+    </div>
+
+    <script>
+      var gData;
+      var newFData = [];
+
+      function filterLow() {
+        //Check if ticked or unticked
+        var flCheck = document.getElementById("low_button");
+        if (flCheck.checked) {
+
+              for (const entry in gData) {
+                // console.log(data[entry].month);
+                var one = gData[entry];
+                if (
+                  one.storey_range == "01 TO 03"
+                ) {
+                  newFData.push(one);
+                }
+              } //loop through data
+        } else {
+          //remove
+          var remainingArr = newFData.filter(data => data.storey_range != '01 TO 03');
+              newFData = remainingArr;
+        }
+              console.log(newFData);
+
+                            //replot
+              d3.select("svg").remove(); 
+                            plot(newFData);
+      } //filterLow
+      
+      function filterMid() {
+        //Check if ticked or unticked
+        var fmCheck = document.getElementById("mid_button");
+        if (fmCheck.checked) {
+
+              for (const entry in gData) {
+                // console.log(data[entry].month);
+                var one = gData[entry];
+                if (
+                 one.storey_range == "04 TO 06" || one.storey_range == "07 TO 09"
+                ) {
+                  newFData.push(one);
+                }
+              } //loop through data
+        } else {
+          //remove
+          var remainingArr = newFData.filter(data => data.storey_range != '04 TO 06' && data.storey_range != '07 TO 09' );
+              newFData = remainingArr;
+        }
+              console.log(newFData);
+
+                            //replot
+              d3.select("svg").remove(); 
+                            plot(newFData);
+      } //filterMid
+
+      // function filterMid() {
+      //   var newFData = [];
+
+      //         //look for and add accordingly
+      //         for (const entry in gData) {
+      //           // console.log(data[entry].month);
+      //           var one = gData[entry];
+      //           if (
+      //             one.storey_range == "04 TO 06" && one.storey_range == "07 TO 09"
+      //           ) {
+      //             // console.log("found");
+      //             // console.log(one);
+      //             //format month-year
+      //             // console.log("original");
+      //             // console.log(data[key].month);
+      //             // console.log("Check");
+      //             // console.log(parseDate(data[key].month));
+
+      //             // one.fMonth = parseDate(one.month);
+      //             // one._id = entry;
+
+      //             // console.log("Final");
+      //             // console.log(entry.fMonth);
+
+      //             // console.log(entry);
+      //             // console.log(entry._id);
+      //             newFData.push(one);
+      //           }
+      //         } //loop through data
+      //         console.log(newFData);
+
+      //         //replot
+      //         d3.select("svg").remove(); 
+      //                       plot(newFData);
+      // } //filterMid
+function filterHigh() {
+        //Check if ticked or unticked
+        var fhCheck = document.getElementById("high_button");
+        if (fhCheck.checked) {
+
+              for (const entry in gData) {
+                // console.log(data[entry].month);
+                var one = gData[entry];
+                if (
+                 one.storey_range != "01 TO 03" && one.storey_range != "04 TO 06" && one.storey_range != "07 TO 09"
+                ) {
+                  newFData.push(one);
+                }
+              } //loop through data
+        } else {
+          //remove
+          console.log("Uncheck");
+          var remainingArr = newFData.filter(data => data.storey_range != "01 TO 03" && data.storey_range != "04 TO 06" && data.storey_range != "07 TO 09" );
+          console.log(remainingArr);
+          
+          for (var findOne in remainingArr) {
+          // const index = newFData.indexOf(remainingArr[findOne]._id);
+          newFData = newFData.filter( ( el ) => !remainingArr.includes( el ) );
+//           console.log(index);
+//         if (index > -1) { // only splice array when item is found
+//           newFData.splice(index, 1); // 2nd parameter means remove one item only
+// console.log("found");
+//         }    
+
+          } //for
+        } //else
+              console.log(newFData);
+
+                            //replot
+              d3.select("svg").remove(); 
+                            plot(newFData);
+      } //filterHigh
+      // function filterHigh() {
+      //   var newFData = [];
+
+      //         //look for and add accordingly
+      //         for (const entry in gData) {
+      //           // console.log(data[entry].month);
+      //           var one = gData[entry];
+      //           if (
+      //             one.storey_range != "01 TO 03" && one.storey_range != "04 TO 06" && one.storey_range != "07 TO 09"
+      //           ) {
+      //             // console.log("found");
+      //             // console.log(one);
+      //             //format month-year
+      //             // console.log("original");
+      //             // console.log(data[key].month);
+      //             // console.log("Check");
+      //             // console.log(parseDate(data[key].month));
+
+      //             // one.fMonth = parseDate(one.month);
+      //             // one._id = entry;
+
+      //             // console.log("Final");
+      //             // console.log(entry.fMonth);
+
+      //             // console.log(entry);
+      //             // console.log(entry._id);
+      //             newFData.push(one);
+      //           }
+      //         } //loop through data
+      //         console.log(newFData);
+
+      //         //replot
+      //         d3.select("svg").remove(); 
+      //         plot(newFData);
+      // } //filterHigh
+
+      function plot(newData) {
+
+      //=================Initialise=============================================
+      // set the dimensions and margins of the graph
+      var margin = { top: 10, right: 30, bottom: 30, left: 60 },
+        width = 1000 - margin.left - margin.right,
+        height = 800 - margin.top - margin.bottom;
+
+        d3.select("svg").remove(); 
+        // append the svg object to the body of the page
+      var svg = d3
+        .select("#my_dataviz")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+       //get minmax time period
+              var minDate = d3.min(newData.map((d) => d.fMonth));
+              var maxDate = d3.max(newData.map((d) => d.fMonth));
+              console.log("MinDate: " + minDate + "Max Date: " + maxDate);
+
+              //get minmax val
+              var minAmt = d3.min(newData.map((d) => d.resale_price));
+              var maxAmt = d3.max(newData.map((d) => d.resale_price));
+
+              // d3.json(
+              // "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv",
+              // function (data) {
+//refresh graph
+                            svg.exit().remove();
+              // Add X axis
+              // var x = d3.scaleLinear().domain([4, 8]).range([0, width]);
+              var x = d3
+                .scaleTime()
+                .domain([minDate, maxDate])
+                .range([0, width]);
+              svg
+                .append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+              // Add Y axis
+              var y = d3
+                .scaleLinear()
+                .domain([minAmt, maxAmt])
+                .range([height, 0]);
+              svg.append("g").call(d3.axisLeft(y));
+
+              //toggles
+              var boolFlat1 = false,
+                boolFlat2 = false;
+              var idFlat1 = "";
+              idFlat2 = "";
+              //   function clickCheck() {
+              //     if (boolFlat1 == false) {
+              //       boolFlat1 = true;
+              //     }
+              //     if (boolFlat1 == true && boolFlat2 == false) {
+              //       boolFlat2 = true;
+              //     }
+              //     if (boolFlat1 == true && boolFlat2 == false) {}
+              //   }
+
+              // // Color scale: return colour based on domain
+              // var colorScale = d3
+              //   .scaleOrdinal()
+              //   .domain(["3 ROOM", "4 ROOM"])
+              //   .range(["red", "orange"]);
+
+              //count unique
+              // var typeCount = d3.count(color.domain);
+              // console.log("Count: " + typeCount);
+
+              //Get Unique Flat Types in Order
+              // const ages = [26, 27, 26, 26, 28, 28, 29, 29, 30]
+              // const result = Array.from(new Set(newData.map((d) => d.flat_type)));
+              var result = Array.from(
+                new Set(newData.map((d) => d.flat_type))
+              ).sort();
+              console.log(result);
+              console.log(result.length);
+              var colourRange = result.length;
+              if (colourRange < 3) {
+                colourRange = 3;
+              }
+              // console.log(d3.schemeGreys[colourRange]);
+              //colorScale
+              let colorScale = d3
+                .scaleOrdinal()
+                .domain(result)
+                // .domain([newData.flat_type])
+                // .range(d3.schemeGreys[3]);
+                .range(d3.schemeGreys[colourRange]);
+
+              //Legend
+              var legendX = 800;
+              var legendY = 600;
+              svg
+                .append("g")
+                .attr("class", "legend")
+                .attr(
+                  "transform",
+                  "translate(" + legendX + "," + legendY + ")"
+                );
+
+              var legend = d3
+                .legendColor()
+                .title("Flat Type Legend")
+                .shapeWidth(20)
+                // .labels(["3 ROOM", "4 ROOM", "5 ROOM"])
+                .labels(result)
+                // .orient("horizontal")
+                .scale(colorScale);
+
+              svg.select(".legend").call(legend);
+
+              // Add dots
+              svg
+                .append("g")
+                .selectAll("dot")
+                .data(newData)
+                .enter()
+                .append("circle")
+                .attr("cx", function (d) {
+                  // console.log(d.fMonth);
+                  return x(d.fMonth);
+                })
+                .attr("cy", function (d) {
+                  // console.log(d.resale_price);
+                  return y(d.resale_price);
+                })
+                .attr("r", 7)
+                .style("fill", function (d) {
+                  // console.log(d.flat_type);
+                  // console.log(
+                  //   "Flat type: " +
+                  //     d.flat_type +
+                  //     " Returned Colour: " +
+                  //     colorScale(d.flat_type)
+                  // );
+                  return colorScale(d.flat_type);
+                })
+                .on("mouseover", function (event, d) {
+                  //MouseOver
+                  //Show Selection
+                  d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .style("stroke", "black")
+                    .style("opacity", 1.0)
+                    .style("stroke-width", 3);
+                })
+                .on("click", function (d) {
+                  //continue highlight
+                  var editing = false;
+
+                  if (boolFlat1 == false) {
+                    //check if match flat2 before add
+                    if (idFlat2 != d._id) {
+                      boolFlat1 = true;
+                      idFlat1 = d._id;
+                      d3.select("#flatInfo1")
+                        .style("opacity", 1)
+                        .style("text-align", "left")
+                        .html(
+                          "<div>Flat Info" +
+                            "<br />Town: " +
+                            d.town +
+                            "<br />Block: " +
+                            d.block +
+                            "<br />Street Name: " +
+                            d.street_name +
+                            "<br />Flat Model: " +
+                            d.flat_model +
+                            "<br />Flat Type: " +
+                            d.flat_type +
+                            "<br />Floor Area sqm: " +
+                            d.floor_area_sqm +
+                            "<br />Lease Commence Date: " +
+                            d.lease_commence_date +
+                            "<br />Remaining Lease: " +
+                            d.remaining_lease +
+                            "<br />Month: " +
+                            d.month +
+                            "<br />Rank: " +
+                            d.rank +
+                            "<br />Resale Price: " +
+                            d.resale_price +
+                            "<br />Storey Range: " +
+                            d.storey_range +
+                            "<br />ID: " +
+                            d._id +
+                            "</div>"
+                        );
+                      console.log(
+                        "changed boolflat1 boolean to true with id " + idFlat1
+                      );
+                      editing = true;
+                    }
+                  } else if (boolFlat2 == false) {
+                    //check if flat1 is
+                    if (idFlat1 != d._id) {
+                      boolFlat2 = true;
+                      idFlat2 = d._id;
+                      d3.select("#flatInfo2")
+                        .style("opacity", 1)
+                        .style("text-align", "left")
+                        .html(
+                          "<div>Flat Info" +
+                            "<br />Town: " +
+                            d.town +
+                            "<br />Block: " +
+                            d.block +
+                            "<br />Street Name: " +
+                            d.street_name +
+                            "<br />Flat Model: " +
+                            d.flat_model +
+                            "<br />Flat Type: " +
+                            d.flat_type +
+                            "<br />Floor Area sqm: " +
+                            d.floor_area_sqm +
+                            "<br />Lease Commence Date: " +
+                            d.lease_commence_date +
+                            "<br />Remaining Lease: " +
+                            d.remaining_lease +
+                            "<br />Month: " +
+                            d.month +
+                            "<br />Rank: " +
+                            d.rank +
+                            "<br />Resale Price: " +
+                            d.resale_price +
+                            "<br />Storey Range: " +
+                            d.storey_range +
+                            "<br />ID: " +
+                            d._id +
+                            "</div>"
+                        );
+                      console.log(
+                        "changed boolflat2 boolean to true with id " + idFlat2
+                      );
+                      editing = true;
+                    }
+                  }
+
+                  if (d._id == idFlat1 && editing == false) {
+                    if (boolFlat1 == true) {
+                      boolFlat1 = false;
+                      idFlat1 = 0;
+                      d3.select("#flatInfo1")
+                        .style("opacity", 1)
+                        .style("text-align", "left")
+                        .html("");
+                      console.log(
+                        "changed boolflat1 boolean to false with id " + idFlat1
+                      );
+                    }
+                  } else if (d._id == idFlat2 && editing == false) {
+                    if (boolFlat2 == true) {
+                      boolFlat2 = false;
+                      idFlat2 = 0;
+                      d3.select("#flatInfo2")
+                        .style("opacity", 1)
+                        .style("text-align", "left")
+                        .html("");
+                      console.log(
+                        "changed boolflat2 boolean to false with id " + idFlat2
+                      );
+                    }
+                  }
+
+                  //if selection matches either
+                  if (idFlat1 == d._id) {
+                    console.log(
+                      "changed boolflat1 boolean to true with id " + idFlat1
+                    );
+
+                    d3.select(this)
+                      .style("stroke", "black")
+                      .style("opacity", 1.0)
+                      .style("stroke-width", 3);
+                  }
+                  if (idFlat2 == d._id) {
+                    console.log(
+                      "changed boolflat2 boolean to true with id " + idFlat1
+                    );
+
+                    d3.select(this)
+                      .style("stroke", "black")
+                      .style("opacity", 1.0)
+                      .style("stroke-width", 3);
+                  }
+                })
+                .on("mouseleave", function (d) {
+                  if (
+                    (boolFlat1 == true && idFlat1 == d._id) ||
+                    (boolFlat2 == true && idFlat2 == d._id)
+                  ) {
+                    console.log("selected so do nothing");
+                  } else {
+                    //MouseLeave
+                    d3.select(this)
+                      .transition()
+                      .duration(300)
+                      .style("stroke", "none")
+                      .style("opacity", 1.0)
+                      .attr("stroke-width", 0);
+                  }
+                });
+
+              //regressionLine
+              // linearRegression = d3
+              //   .regressionLinear()
+              //   .x((d) => d.x)
+              //   .y((d) => d.y);
+              // // .domain([-1.7, 16]);
+
+              // const data = [
+              //   [0, 2],
+              //   [1, 1],
+              //   [2, 0],
+              // ];
+              const r = d3
+                .regressionLinear()
+                .x((d) => d.fMonth)
+                .y((d) => d.resale_price)(newData);
+              // const rLine = r(newData.)
+              // console.log(r);
+              // console.log(r[0][0]);
+              // console.log(r[0][1]);
+              // console.log(r[1][0]);
+              // console.log(r[1][1]);
+              // console.log(r.a);
+              // console.log(r.b);
+              // console.log(r.rSquared);
+              // console.log(r.length);
+
+              let line = d3
+                .line()
+                .x((d) => x(d[0]))
+                .y((d) => y(d[1]));
+
+              svg
+                .append("path")
+                .datum(r)
+                .attr("d", line)
+                .style("stroke", "black")
+                .style("stroke-width", "2px");
+            }
+
+      function retrieveDataFilterAll() {
+         var queryVal = document.getElementById("query").value;
+
+        //for further filter
+        var queryBlock = queryVal.split(" ").shift();
+        var indexOfSpace = queryVal.indexOf(" ");
+        if (indexOfSpace === -1) {
+          var queryStreet = "";
+        } else {
+          var queryStreet = queryVal.substring(indexOfSpace + 1);
+        }
+
+        console.log("Block: " + queryBlock + " Street: " + queryStreet);
+        console.log("Finding: " + queryVal);
+
+        //Retrieve static
+        d3.queue()
+          .defer(
+            d3.csv,
+            "https://raw.githubusercontent.com/gohruhui/CSC3007-project/master/data/1990.csv"
+          )
+          .defer(
+            d3.csv,
+            "https://raw.githubusercontent.com/gohruhui/CSC3007-project/master/data/2000.csv"
+          )
+          .defer(
+            d3.csv,
+            "https://raw.githubusercontent.com/gohruhui/CSC3007-project/master/data/2012.csv"
+          )
+          .defer(
+            d3.csv,
+            "https://raw.githubusercontent.com/gohruhui/CSC3007-project/master/data/2015.csv"
+          )
+          .defer(
+            d3.csv,
+            "https://raw.githubusercontent.com/gohruhui/CSC3007-project/master/data/2017.csv"
+          )
+          .await(function (error, file1, file2, file3, file4, file5) {
+            if (error) {
+              console.error(error);
+            } else {
+              // console.log("do stuff");
+              // console.log(file1);
+              // console.log(file2);
+              // console.log(file3);
+              // console.log(file4);
+              // console.log(file5);
+
+              // console.log("check");
+              // var data = file1;
+              // data += file2;
+              // data += file3;
+              // data += file4;
+              // data += file5;
+
+              // console.log(data);
+              // console.log(data);
+
+              //month-year formatter
+              const parseDate = d3.timeParse("%Y-%m");
+
+              var newData = [];
+
+              //look for and add accordingly
+              for (const entry in file1) {
+                // console.log(data[entry].month);
+                var one = file1[entry];
+                if (
+                  one.block == queryBlock.toUpperCase() &&
+                  one.street_name == queryStreet.toUpperCase()
+                ) {
+                  // console.log("found");
+                  // console.log(one);
+                  //format month-year
+                  // console.log("original");
+                  // console.log(data[key].month);
+                  // console.log("Check");
+                  // console.log(parseDate(data[key].month));
+                  one.fMonth = parseDate(one.month);
+                  one._id = entry;
+                  // console.log("Final");
+                  // console.log(entry.fMonth);
+
+                  // console.log(entry);
+                  // console.log(entry._id);
+                  newData.push(one);
+                }
+              } //loop through data
+
+              //look for and add accordingly
+              for (const entry in file2) {
+                // console.log(data[entry].month);
+                var one = file2[entry];
+                if (
+                  one.block == queryBlock.toUpperCase() &&
+                  one.street_name == queryStreet.toUpperCase()
+                ) {
+                  // console.log("found");
+                  // console.log(one);
+                  //format month-year
+                  // console.log("original");
+                  // console.log(data[key].month);
+                  // console.log("Check");
+                  // console.log(parseDate(data[key].month));
+                  one.fMonth = parseDate(one.month);
+                  one._id = entry;
+                  // console.log("Final");
+                  // console.log(entry.fMonth);
+
+                  // console.log(entry);
+                  // console.log(entry._id);
+                  newData.push(one);
+                }
+              } //loop through data
+
+              //look for and add accordingly
+              for (const entry in file3) {
+                // console.log(data[entry].month);
+                var one = file3[entry];
+                if (
+                  one.block == queryBlock.toUpperCase() &&
+                  one.street_name == queryStreet.toUpperCase()
+                ) {
+                  // console.log("found");
+                  // console.log(one);
+                  //format month-year
+                  // console.log("original");
+                  // console.log(data[key].month);
+                  // console.log("Check");
+                  // console.log(parseDate(data[key].month));
+                  one.fMonth = parseDate(one.month);
+                  one._id = entry;
+                  // console.log("Final");
+                  // console.log(entry.fMonth);
+
+                  // console.log(entry);
+                  // console.log(entry._id);
+                  newData.push(one);
+                }
+              } //loop through data
+
+              //look for and add accordingly
+              for (const entry in file4) {
+                // console.log(data[entry].month);
+                var one = file4[entry];
+                if (
+                  one.block == queryBlock.toUpperCase() &&
+                  one.street_name == queryStreet.toUpperCase()
+                ) {
+                  // console.log("found");
+                  // console.log(one);
+                  //format month-year
+                  // console.log("original");
+                  // console.log(data[key].month);
+                  // console.log("Check");
+                  // console.log(parseDate(data[key].month));
+                  one.fMonth = parseDate(one.month);
+                  one._id = entry;
+                  // console.log("Final");
+                  // console.log(entry.fMonth);
+
+                  // console.log(entry);
+                  // console.log(entry._id);
+                  newData.push(one);
+                }
+              } //loop through data
+
+              //look for and add accordingly
+              for (const entry in file5) {
+                // console.log(data[entry].month);
+                var one = file5[entry];
+                if (
+                  one.block == queryBlock.toUpperCase() &&
+                  one.street_name == queryStreet.toUpperCase()
+                ) {
+                  // console.log("found");
+                  // console.log(one);
+                  //format month-year
+                  // console.log("original");
+                  // console.log(data[key].month);
+                  // console.log("Check");
+                  // console.log(parseDate(data[key].month));
+                  one.fMonth = parseDate(one.month);
+                  one._id = entry;
+                  // console.log("Final");
+                  // console.log(entry.fMonth);
+
+                  // console.log(entry);
+                  // console.log(entry._id);
+                  newData.push(one);
+                }
+              } //loop through data
+
+              //check new data
+              console.log(newData);
+
+              plot(newData);
+
+              gData = newData;
+                    }
+          });
+      } //retrieveDataFilterAll
+
+      //   var queryLink =
+      //     "https://data.gov.sg/api/action/datastore_search?resource_id=f1765b54-a209-4718-8d38-a39237f502b3&q=" +
+      //     queryVal;
+
+      //   fetch(queryLink)
+      //     .then((response) => response.json())
+      //     .then(function (data) {
+      //       var totalRecord = data.result.total;
+      //       console.log(
+      //         "Total Record for query " + queryVal + " is " + totalRecord
+      //       );
+      //       for (let i = 0; i < totalRecord; i += 100) {
+      //         console.log(i);
+      //       }
+
+      //       //comb through data and get exact block and street
+      //       tempData = data.result.records;
+      //       console.log(tempData);
+
+      //       //month-year formatter
+      //       const parseDate = d3.timeParse("%Y-%m");
+      //       // console.log("Test parser:" + parseDate("2017-03"));
+      //       //clean data
+      //       var newData = [];
+      //       for (var key in tempData) {
+      //         var entry = tempData[key];
+
+      //         //check and filter data
+      //         if (
+      //           entry.block == queryBlock.toUpperCase() &&
+      //           entry.street_name == queryStreet.toUpperCase()
+      //         ) {
+      //           // console.log("found");
+      //           //format month-year
+      //           // console.log("original");
+      //           // console.log(data[key].month);
+      //           // console.log("Check");
+      //           // console.log(parseDate(data[key].month));
+      //           entry.fMonth = parseDate(entry.month);
+      //           // console.log("Final");
+      //           // console.log(entry.fMonth);
+
+      //           // console.log(entry);
+      //           // console.log(entry._id);
+      //           newData.push(entry);
+      //         }
+      //       }
+      //       console.log(newData);
+
+      //       //get minmax time period
+      //       var minDate = d3.min(newData.map((d) => d.fMonth));
+      //       var maxDate = d3.max(newData.map((d) => d.fMonth));
+      //       console.log("MinDate: " + minDate + "Max Date: " + maxDate);
+
+      //       //get minmax val
+      //       var minAmt = d3.min(newData.map((d) => d.resale_price));
+      //       var maxAmt = d3.max(newData.map((d) => d.resale_price));
+
+      //       // d3.json(
+      //       // "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv",
+      //       // function (data) {
+
+      //       // Add X axis
+      //       // var x = d3.scaleLinear().domain([4, 8]).range([0, width]);
+      //       var x = d3.scaleTime().domain([minDate, maxDate]).range([0, width]);
+      //       svg
+      //         .append("g")
+      //         .attr("transform", "translate(0," + height + ")")
+      //         .call(d3.axisBottom(x));
+
+      //       // Add Y axis
+      //       var y = d3
+      //         .scaleLinear()
+      //         .domain([minAmt, maxAmt])
+      //         .range([height, 0]);
+      //       svg.append("g").call(d3.axisLeft(y));
+
+      //       //toggles
+      //       var boolFlat1 = false,
+      //         boolFlat2 = false;
+      //       var idFlat1 = "";
+      //       idFlat2 = "";
+      //       //   function clickCheck() {
+      //       //     if (boolFlat1 == false) {
+      //       //       boolFlat1 = true;
+      //       //     }
+      //       //     if (boolFlat1 == true && boolFlat2 == false) {
+      //       //       boolFlat2 = true;
+      //       //     }
+      //       //     if (boolFlat1 == true && boolFlat2 == false) {}
+      //       //   }
+
+      //       // // Color scale: return colour based on domain
+      //       // var color = d3
+      //       //   .scaleOrdinal()
+      //       //   .domain(["3 ROOM", "4 ROOM", "5 ROOM"])
+      //       //   .range(["red", "orange", "yellow"]);
+
+      //       //count unique
+      //       // var typeCount = d3.count(color.domain);
+      //       // console.log("Count: " + typeCount);
+
+      //       //Get Unique Flat Types in Order
+      //       // const ages = [26, 27, 26, 26, 28, 28, 29, 29, 30]
+      //       // const result = Array.from(new Set(newData.map((d) => d.flat_type)));
+      //       var result = Array.from(
+      //         new Set(newData.map((d) => d.flat_type))
+      //       ).sort();
+      //       console.log(result);
+      //       console.log(result.length);
+      //       var colourRange = result.length;
+      //       console.log(d3.schemeGreys[colourRange]);
+      //       //colorScale
+      //       let colorScale = d3
+      //         .scaleOrdinal()
+      //         .domain(result)
+      //         // .domain([newData.flat_type])
+      //         // .range(d3.schemeGreys[3]);
+      //         .range(d3.schemeGreys[colourRange]);
+
+      //       //Legend
+      //       var legendX = 800;
+      //       var legendY = 600;
+      //       svg
+      //         .append("g")
+      //         .attr("class", "legend")
+      //         .attr("transform", "translate(" + legendX + "," + legendY + ")");
+
+      //       var legend = d3
+      //         .legendColor()
+      //         .title("Flat Type Legend")
+      //         .shapeWidth(20)
+      //         // .labels(["3 ROOM", "4 ROOM", "5 ROOM"])
+      //         .labels(result)
+      //         // .orient("horizontal")
+      //         .scale(colorScale);
+
+      //       svg.select(".legend").call(legend);
+
+      //       // Add dots
+      //       svg
+      //         .append("g")
+      //         .selectAll("dot")
+      //         .data(newData)
+      //         .enter()
+      //         .append("circle")
+      //         .attr("cx", function (d) {
+      //           // console.log(d.fMonth);
+      //           return x(d.fMonth);
+      //         })
+      //         .attr("cy", function (d) {
+      //           // console.log(d.resale_price);
+      //           return y(d.resale_price);
+      //         })
+      //         .attr("r", 7)
+      //         .style("fill", function (d) {
+      //           // console.log(d.flat_type);
+      //           // console.log(
+      //           //   "Flat type: " +
+      //           //     d.flat_type +
+      //           //     " Returned Colour: " +
+      //           //     colorScale(d.flat_type)
+      //           // );
+      //           return colorScale(d.flat_type);
+      //         })
+      //         .on("mouseover", function (event, d) {
+      //           //MouseOver
+      //           //Show Selection
+      //           d3.select(this)
+      //             .transition()
+      //             .duration(200)
+      //             .style("stroke", "black")
+      //             .style("opacity", 1.0)
+      //             .style("stroke-width", 3);
+      //         })
+      //         .on("click", function (d) {
+      //           //continue highlight
+      //           var editing = false;
+
+      //           if (boolFlat1 == false) {
+      //             //check if match flat2 before add
+      //             if (idFlat2 != d._id) {
+      //               boolFlat1 = true;
+      //               idFlat1 = d._id;
+      //               d3.select("#flatInfo1")
+      //                 .style("opacity", 1)
+      //                 .style("text-align", "left")
+      //                 .html(
+      //                   "<div>Flat Info" +
+      //                     "<br />Town: " +
+      //                     d.town +
+      //                     "<br />Block: " +
+      //                     d.block +
+      //                     "<br />Street Name: " +
+      //                     d.street_name +
+      //                     "<br />Flat Model: " +
+      //                     d.flat_model +
+      //                     "<br />Flat Type: " +
+      //                     d.flat_type +
+      //                     "<br />Floor Area sqm: " +
+      //                     d.floor_area_sqm +
+      //                     "<br />Lease Commence Date: " +
+      //                     d.lease_commence_date +
+      //                     "<br />Remaining Lease: " +
+      //                     d.remaining_lease +
+      //                     "<br />Month: " +
+      //                     d.month +
+      //                     "<br />Rank: " +
+      //                     d.rank +
+      //                     "<br />Resale Price: " +
+      //                     d.resale_price +
+      //                     "<br />Storey Range: " +
+      //                     d.storey_range +
+      //                     "<br />ID: " +
+      //                     d._id +
+      //                     "</div>"
+      //                 );
+      //               console.log(
+      //                 "changed boolflat1 boolean to true with id " + idFlat1
+      //               );
+      //               editing = true;
+      //             }
+      //           } else if (boolFlat2 == false) {
+      //             //check if flat1 is
+      //             if (idFlat1 != d._id) {
+      //               boolFlat2 = true;
+      //               idFlat2 = d._id;
+      //               d3.select("#flatInfo2")
+      //                 .style("opacity", 1)
+      //                 .style("text-align", "left")
+      //                 .html(
+      //                   "<div>Flat Info" +
+      //                     "<br />Town: " +
+      //                     d.town +
+      //                     "<br />Block: " +
+      //                     d.block +
+      //                     "<br />Street Name: " +
+      //                     d.street_name +
+      //                     "<br />Flat Model: " +
+      //                     d.flat_model +
+      //                     "<br />Flat Type: " +
+      //                     d.flat_type +
+      //                     "<br />Floor Area sqm: " +
+      //                     d.floor_area_sqm +
+      //                     "<br />Lease Commence Date: " +
+      //                     d.lease_commence_date +
+      //                     "<br />Remaining Lease: " +
+      //                     d.remaining_lease +
+      //                     "<br />Month: " +
+      //                     d.month +
+      //                     "<br />Rank: " +
+      //                     d.rank +
+      //                     "<br />Resale Price: " +
+      //                     d.resale_price +
+      //                     "<br />Storey Range: " +
+      //                     d.storey_range +
+      //                     "<br />ID: " +
+      //                     d._id +
+      //                     "</div>"
+      //                 );
+      //               console.log(
+      //                 "changed boolflat2 boolean to true with id " + idFlat2
+      //               );
+      //               editing = true;
+      //             }
+      //           }
+
+      //           if (d._id == idFlat1 && editing == false) {
+      //             if (boolFlat1 == true) {
+      //               boolFlat1 = false;
+      //               idFlat1 = 0;
+      //               d3.select("#flatInfo1")
+      //                 .style("opacity", 1)
+      //                 .style("text-align", "left")
+      //                 .html("");
+      //               console.log(
+      //                 "changed boolflat1 boolean to false with id " + idFlat1
+      //               );
+      //             }
+      //           } else if (d._id == idFlat2 && editing == false) {
+      //             if (boolFlat2 == true) {
+      //               boolFlat2 = false;
+      //               idFlat2 = 0;
+      //               d3.select("#flatInfo2")
+      //                 .style("opacity", 1)
+      //                 .style("text-align", "left")
+      //                 .html("");
+      //               console.log(
+      //                 "changed boolflat2 boolean to false with id " + idFlat2
+      //               );
+      //             }
+      //           }
+
+      //           //if selection matches either
+      //           if (idFlat1 == d._id) {
+      //             console.log(
+      //               "changed boolflat1 boolean to true with id " + idFlat1
+      //             );
+
+      //             d3.select(this)
+      //               .style("stroke", "black")
+      //               .style("opacity", 1.0)
+      //               .style("stroke-width", 3);
+      //           }
+      //           if (idFlat2 == d._id) {
+      //             console.log(
+      //               "changed boolflat2 boolean to true with id " + idFlat1
+      //             );
+
+      //             d3.select(this)
+      //               .style("stroke", "black")
+      //               .style("opacity", 1.0)
+      //               .style("stroke-width", 3);
+      //           }
+      //         })
+      //         .on("mouseleave", function (d) {
+      //           if (
+      //             (boolFlat1 == true && idFlat1 == d._id) ||
+      //             (boolFlat2 == true && idFlat2 == d._id)
+      //           ) {
+      //             console.log("selected so do nothing");
+      //           } else {
+      //             //MouseLeave
+      //             d3.select(this)
+      //               .transition()
+      //               .duration(300)
+      //               .style("stroke", "none")
+      //               .style("opacity", 1.0)
+      //               .attr("stroke-width", 0);
+      //           }
+      //         });
+
+      //       //regressionLine
+      //       // linearRegression = d3
+      //       //   .regressionLinear()
+      //       //   .x((d) => d.x)
+      //       //   .y((d) => d.y);
+      //       // // .domain([-1.7, 16]);
+
+      //       // const data = [
+      //       //   [0, 2],
+      //       //   [1, 1],
+      //       //   [2, 0],
+      //       // ];
+      //       const r = d3
+      //         .regressionLinear()
+      //         .x((d) => d.fMonth)
+      //         .y((d) => d.resale_price)(newData);
+      //       // const rLine = r(newData.)
+      //       // console.log(r);
+      //       // console.log(r[0][0]);
+      //       // console.log(r[0][1]);
+      //       // console.log(r[1][0]);
+      //       // console.log(r[1][1]);
+      //       // console.log(r.a);
+      //       // console.log(r.b);
+      //       // console.log(r.rSquared);
+      //       // console.log(r.length);
+
+      //       let line = d3
+      //         .line()
+      //         .x((d) => x(d[0]))
+      //         .y((d) => y(d[1]));
+
+      //       svg
+      //         .append("path")
+      //         .datum(r)
+      //         .attr("d", line)
+      //         .style("stroke", "black")
+      //         .style("stroke-width", "2px");
+      //     }); //fetch-then
+      // } //retrieveData
+
+    </script>
+  </body>
+</html>
