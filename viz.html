@@ -30,7 +30,6 @@
         type="text"
         id="query"
         name="query"
-        value="310a punggol walk"
       /><br />
       <label for="lFilter">Storey Range: </label>
       <input class="filter_button" id="low_button" type="checkbox" onclick="filterLow();">Low (01 to 03) </input>
@@ -147,7 +146,7 @@ function filterHigh() {
       var margin = { top: 10, right: 30, bottom: 30, left: 60 },
         // width = 1000 - margin.left - margin.right,
         // height = 800 - margin.top - margin.bottom;
-        width = 700 - margin.left - margin.right,
+        width = 800 - margin.left - margin.right,
         height = 550 - margin.top - margin.bottom;
 
         d3.select("svg").remove(); 
@@ -232,8 +231,8 @@ function filterHigh() {
                 .range(d3.schemeBlues[colourRange]);
 
               //Legend
-              var legendX = 800;
-              var legendY = 600;
+              var legendX = 550;
+              var legendY = 400;
               svg
                 .append("g")
                 .attr("class", "legend")
@@ -394,6 +393,7 @@ function filterHigh() {
                       d3.select("#flatInfo1")
                         .style("opacity", 1)
                         .style("text-align", "left")
+                        .style("border-style", "none")
                         .html("");
                       console.log(
                         "changed boolflat1 boolean to false with id " + idFlat1
@@ -406,6 +406,7 @@ function filterHigh() {
                       d3.select("#flatInfo2")
                         .style("opacity", 1)
                         .style("text-align", "left")
+                        .style("border-style", "none")
                         .html("");
                       console.log(
                         "changed boolflat2 boolean to false with id " + idFlat2
